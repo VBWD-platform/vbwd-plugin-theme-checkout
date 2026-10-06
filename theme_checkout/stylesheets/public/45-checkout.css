@@ -1,0 +1,601 @@
+/* theme_checkout (S152-07c) — CSS ported from fe-user's checkout surfaces: the core
+   checkout blocks (EmailBlock.vue, BillingAddressBlock.vue, PaymentMethodsBlock.vue,
+   TermsCheckbox.vue), fe-core CouponInput.vue, PriceDisplay.vue, plugins/checkout
+   PublicCheckoutView.vue, CheckoutConfirmationView.vue, TokenBundleCollection.vue and
+   plugins/stripe-payment StripeSuccessView.vue (the only payment view with a <style>).
+   Structural only. Colours keep the SPA's own var(--…, fallback) chains; every literal
+   the SPA hard-codes is the fallback of a --vbwd-checkout-* token (S152-06d), so the
+   default rendering is the SPA's and a child theme's tokens.json or a CMS style can
+   override it.
+
+   The SPA scopes each component; here the block rules are scoped to the block's root
+   class (.email-block, .billing-address-block, .payment-methods-block, .terms-checkbox,
+   .checkout-confirmation) so generic names (.error, .hint, .btn) keep their own looks.
+   PublicCheckoutView's rules stay unscoped: they are checkout-wide — the selling
+   adapters' pay pages (theme_booking) reuse .card, .btn, .public-checkout, the states
+   and the spinner, and load after this stylesheet (theme_checkout is their dependency).
+   Block rules come first and the view's after, as in the SPA bundle (a child
+   component's CSS precedes its parent's), so the view's .card padding wins on the
+   blocks' roots. */
+
+/* EmailBlock.vue */
+.email-block {
+  padding: 20px;
+  border: 2px solid var(--vbwd-checkout-block-border, #e0e0e0);
+  border-radius: 8px;
+  background: var(--vbwd-checkout-block-bg, white);
+}
+.email-block.success {
+  border-color: var(--vbwd-checkout-email-success-border, #27ae60);
+  background: var(--vbwd-checkout-email-success-bg, #e8f8f0);
+}
+.email-block.error { border-color: var(--vbwd-checkout-email-error-border, #e74c3c); }
+.email-block h3 { margin: 0 0 15px 0; color: var(--vbwd-checkout-block-heading-text, #2c3e50); }
+.email-block .form-group { position: relative; }
+.email-block input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--vbwd-checkout-field-border, #ddd);
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+.email-block input:disabled {
+  background: var(--vbwd-checkout-field-disabled-bg, #f5f5f5);
+  color: var(--vbwd-checkout-field-disabled-text, #666);
+}
+.email-block .hint { margin: 10px 0; font-size: 0.9rem; color: var(--vbwd-checkout-email-hint-text, #666); }
+.email-block .text-red { color: var(--vbwd-checkout-email-hint-error-text, #e74c3c); }
+.email-block .btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 10px;
+}
+.email-block .btn.primary {
+  background: var(--vbwd-checkout-button-primary-bg, #3498db);
+  color: var(--vbwd-checkout-button-primary-text, white);
+}
+.email-block .btn.primary:hover:not(:disabled) { background: var(--vbwd-checkout-button-primary-hover-bg, #2980b9); }
+.email-block .btn.primary:disabled {
+  background: var(--vbwd-checkout-button-primary-disabled-bg, #95a5a6);
+  cursor: not-allowed;
+}
+.email-block .btn.secondary {
+  background: var(--vbwd-checkout-button-secondary-bg, #ecf0f1);
+  color: var(--vbwd-checkout-email-button-secondary-text, #333);
+}
+.email-block .btn.secondary:hover { background: var(--vbwd-checkout-button-secondary-hover-bg, #bdc3c7); }
+/* EmailBlock's error is plain red text; the reset keeps PublicCheckoutView's boxed
+   .error-message (below, unscoped) from reaching into the block. */
+.email-block .error-message {
+  color: var(--vbwd-checkout-email-error-text, #e74c3c);
+  margin-top: 10px;
+  font-size: 0.875rem;
+  background: none;
+  padding: 0;
+  border-radius: 0;
+}
+.email-block .password-strength { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.email-block .strength-bar { height: 4px; flex: 1; border-radius: 2px; transition: background-color 0.3s; }
+.email-block .strength-bar.weak {
+  background: linear-gradient(90deg, var(--vbwd-checkout-strength-weak, #e74c3c) 33%, var(--vbwd-checkout-strength-track, #ddd) 33%);
+}
+.email-block .strength-bar.medium {
+  background: linear-gradient(90deg, var(--vbwd-checkout-strength-medium, #f39c12) 66%, var(--vbwd-checkout-strength-track, #ddd) 66%);
+}
+.email-block .strength-bar.strong { background: var(--vbwd-checkout-strength-strong, #27ae60); }
+.email-block .strength-label { font-size: 0.75rem; text-transform: uppercase; font-weight: 600; }
+.email-block .strength-label.weak { color: var(--vbwd-checkout-strength-weak, #e74c3c); }
+.email-block .strength-label.medium { color: var(--vbwd-checkout-strength-medium, #f39c12); }
+.email-block .strength-label.strong { color: var(--vbwd-checkout-strength-strong, #27ae60); }
+.email-block .forgot-password-link {
+  display: block;
+  text-align: right;
+  font-size: 0.875rem;
+  color: var(--vbwd-checkout-link-text, #3498db);
+  margin-bottom: 5px;
+}
+.email-block .forgot-password-link:hover { text-decoration: underline; }
+.email-block .logged-in { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+.email-block .logged-in-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--vbwd-checkout-email-logged-in-text, #27ae60);
+  font-weight: 500;
+}
+.email-block .checkmark { font-size: 1.5rem; }
+.email-block .logout-btn { width: auto; padding: 8px 16px; margin-top: 0; }
+
+/* BillingAddressBlock.vue */
+.billing-address-block {
+  padding: 20px;
+  border: 2px solid var(--vbwd-checkout-block-border, #e0e0e0);
+  border-radius: 8px;
+  background: var(--vbwd-checkout-block-bg, white);
+}
+.billing-address-block h3 { margin: 0 0 15px 0; color: var(--vbwd-checkout-block-heading-text, #2c3e50); }
+.billing-address-block .form-group { margin-bottom: 15px; }
+.billing-address-block .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.billing-address-block .form-row.city-zip { grid-template-columns: 2fr 1fr; }
+@media (max-width: 480px) {
+  .billing-address-block .form-row { grid-template-columns: 1fr; }
+}
+.billing-address-block label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: var(--vbwd-checkout-field-label-text, #333);
+  font-size: 0.95rem;
+}
+.billing-address-block input,
+.billing-address-block select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--vbwd-checkout-field-border, #ddd);
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+.billing-address-block input:focus,
+.billing-address-block select:focus {
+  outline: none;
+  border-color: var(--vbwd-checkout-field-focus-border, #3498db);
+  box-shadow: 0 0 0 2px var(--vbwd-checkout-field-focus-ring, rgba(52, 152, 219, 0.1));
+}
+.billing-address-block input.error,
+.billing-address-block select.error { border-color: var(--vbwd-checkout-field-error-border, #e74c3c); }
+
+/* PaymentMethodsBlock.vue */
+.payment-methods-block {
+  padding: 20px;
+  border: 2px solid var(--vbwd-checkout-block-border, #e0e0e0);
+  border-radius: 8px;
+  background: var(--vbwd-checkout-block-bg, white);
+}
+.payment-methods-block h3 { margin: 0 0 15px 0; color: var(--vbwd-checkout-block-heading-text, #2c3e50); }
+.payment-methods-block .methods-list { display: flex; flex-direction: column; gap: 12px; }
+.payment-methods-block .method-option {
+  padding: 15px;
+  border: 2px solid var(--vbwd-checkout-method-border, #e0e0e0);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.payment-methods-block .method-option:hover { border-color: var(--vbwd-checkout-method-hover-border, #3498db); }
+.payment-methods-block .method-option.selected {
+  border-color: var(--vbwd-checkout-method-selected-border, #3498db);
+  background: var(--vbwd-checkout-method-selected-bg, #f0f7ff);
+}
+.payment-methods-block .method-header { display: flex; align-items: center; gap: 10px; }
+.payment-methods-block .method-header input[type="radio"] { margin: 0; cursor: pointer; }
+.payment-methods-block .method-name {
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--vbwd-checkout-method-name-text, #2c3e50);
+}
+.payment-methods-block .method-description {
+  margin: 8px 0 0 26px;
+  color: var(--vbwd-checkout-method-description-text, #666);
+  font-size: 0.9rem;
+}
+.payment-methods-block .method-instructions {
+  margin-top: 15px;
+  padding: 12px;
+  background: var(--vbwd-checkout-method-instructions-bg, #f8f9fa);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: var(--vbwd-checkout-method-instructions-text, #495057);
+}
+.payment-methods-block .method-instructions p { margin: 0; }
+.payment-methods-block .error,
+.payment-methods-block .empty {
+  padding: 20px;
+  text-align: center;
+  color: var(--vbwd-checkout-method-state-text, #666);
+}
+.payment-methods-block .error { color: var(--vbwd-checkout-method-error-text, #e74c3c); }
+
+/* TermsCheckbox.vue */
+.terms-checkbox { margin: 15px 0; }
+.terms-checkbox .checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+.terms-checkbox .checkbox-label input { margin-top: 3px; cursor: pointer; }
+.terms-checkbox .checkbox-label a { color: var(--vbwd-checkout-link-text, #3498db); text-decoration: underline; }
+.terms-checkbox .checkbox-label a:hover { color: var(--vbwd-checkout-link-hover-text, #2980b9); }
+.terms-checkbox .popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--vbwd-checkout-popup-overlay, rgba(0, 0, 0, 0.5));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+/* The SPA mounts the popup with v-if; the theme toggles [hidden], which display:flex
+   would otherwise override. */
+.terms-checkbox .popup-overlay[hidden] { display: none; }
+.terms-checkbox .popup-content {
+  background: var(--vbwd-checkout-popup-bg, white);
+  border-radius: 8px;
+  max-width: 600px;
+  max-height: 80vh;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px var(--vbwd-checkout-popup-shadow, rgba(0, 0, 0, 0.15));
+}
+.terms-checkbox .popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--vbwd-checkout-popup-divider, #eee);
+}
+.terms-checkbox .popup-header h3 { margin: 0; color: var(--vbwd-checkout-popup-heading-text, #2c3e50); }
+.terms-checkbox .close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--vbwd-checkout-popup-close-text, #666);
+  line-height: 1;
+}
+.terms-checkbox .close-btn:hover { color: var(--vbwd-checkout-popup-close-hover-text, #333); }
+.terms-checkbox .popup-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+  line-height: 1.6;
+  color: var(--vbwd-checkout-popup-body-text, #333);
+}
+.terms-checkbox .popup-body h3 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  color: var(--vbwd-checkout-popup-heading-text, #2c3e50);
+}
+.terms-checkbox .popup-body h4 {
+  margin-top: 15px;
+  margin-bottom: 8px;
+  color: var(--vbwd-checkout-popup-heading-text, #2c3e50);
+}
+.terms-checkbox .popup-body li { margin-left: 20px; margin-bottom: 5px; }
+.terms-checkbox .popup-body p { margin-bottom: 10px; }
+.terms-checkbox .popup-footer {
+  padding: 15px 20px;
+  border-top: 1px solid var(--vbwd-checkout-popup-divider, #eee);
+  text-align: right;
+}
+.terms-checkbox .btn.primary {
+  padding: 10px 20px;
+  background: var(--vbwd-checkout-button-primary-bg, #3498db);
+  color: var(--vbwd-checkout-button-primary-text, white);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.terms-checkbox .btn.primary:hover { background: var(--vbwd-checkout-button-primary-hover-bg, #2980b9); }
+
+/* fe-core CouponInput.vue (its own token chains, verbatim) */
+.vbwd-coupon { display: flex; flex-direction: column; gap: 0.4rem; }
+.vbwd-coupon__row { display: flex; gap: 0.5rem; }
+.vbwd-coupon__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--vbwd-border, #d1d5db);
+  border-radius: var(--vbwd-radius, 6px);
+  background: var(--vbwd-surface, #fff);
+  color: var(--vbwd-text, #374151);
+  font-size: 0.9rem;
+}
+.vbwd-coupon__input:focus { outline: none; border-color: var(--vbwd-primary, #4f46e5); }
+.vbwd-coupon__apply,
+.vbwd-coupon__clear {
+  padding: 0.5rem 1rem;
+  border-radius: var(--vbwd-radius, 6px);
+  border: 1px solid var(--vbwd-primary, #4f46e5);
+  background: var(--vbwd-primary, #4f46e5);
+  color: var(--vbwd-on-primary, #fff);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.vbwd-coupon__apply:disabled,
+.vbwd-coupon__clear:disabled { opacity: 0.55; cursor: not-allowed; }
+.vbwd-coupon__applied {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--vbwd-radius, 6px);
+  background: var(--vbwd-success-soft, #ecfdf5);
+  color: var(--vbwd-success, #047857);
+  font-size: 0.9rem;
+}
+.vbwd-coupon__clear {
+  background: transparent;
+  border-color: transparent;
+  color: var(--vbwd-success, #047857);
+  text-decoration: underline;
+  padding: 0.25rem 0.5rem;
+}
+.vbwd-coupon__error { margin: 0; font-size: 0.825rem; color: var(--vbwd-danger, #dc2626); }
+
+/* fe-user PriceDisplay.vue (its own token chains, verbatim) */
+.price-display { display: inline-flex; align-items: baseline; gap: var(--vbwd-spacing-xs, 0.375rem); }
+.price-display__netto-tag {
+  font-size: 0.75em;
+  font-weight: 500;
+  color: var(--vbwd-text-muted, #6b7280);
+  background: var(--vbwd-surface-muted, #f3f4f6);
+  padding: 0.1em 0.45em;
+  border-radius: var(--vbwd-radius-sm, 0.25rem);
+  white-space: nowrap;
+}
+
+/* PublicCheckoutView.vue — checkout-wide (also the selling adapters' pay pages) */
+.public-checkout { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+.public-checkout h1 { margin-bottom: 30px; color: var(--vbwd-checkout-title-text, #2c3e50); }
+.checkout-coupon { margin: 16px 0; }
+.order-total {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--vbwd-checkout-order-total-border, #e5e7eb);
+  text-align: right;
+  font-size: 1.1rem;
+}
+.order-saved { margin-top: 4px; font-size: 0.85rem; font-weight: 500; color: var(--vbwd-success, #047857); }
+.loading-state,
+.error-state,
+.no-plan { text-align: center; padding: 60px 20px; color: var(--vbwd-checkout-state-text, #666); }
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--vbwd-checkout-spinner-track, #f3f3f3);
+  border-top: 3px solid var(--vbwd-checkout-spinner-indicator, #3498db);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 15px;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.checkout-content { display: flex; flex-direction: column; gap: 20px; }
+.card {
+  background: var(--vbwd-checkout-card-bg, white);
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px var(--vbwd-checkout-card-shadow, rgba(0, 0, 0, 0.05));
+}
+.card h2 {
+  margin-bottom: 20px;
+  color: var(--vbwd-checkout-card-heading-text, #2c3e50);
+  font-size: 1.2rem;
+  border-bottom: 1px solid var(--vbwd-checkout-card-heading-border, #eee);
+  padding-bottom: 10px;
+}
+.checkout-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding-top: 10px;
+}
+.requirements {
+  background: var(--vbwd-checkout-requirements-bg, #fff3cd);
+  padding: 15px;
+  border-radius: 8px;
+  margin: 15px 0;
+  border: 1px solid var(--vbwd-checkout-requirements-border, #ffc107);
+}
+.requirements p { margin: 0 0 8px 0; color: var(--vbwd-checkout-requirements-text, #856404); }
+.requirements ul { margin: 0; padding-left: 20px; color: var(--vbwd-checkout-requirements-text, #856404); }
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.2s;
+}
+.btn.primary {
+  background-color: var(--vbwd-checkout-button-primary-bg, #3498db);
+  color: var(--vbwd-checkout-button-primary-text, white);
+}
+.btn.primary:hover:not(:disabled) { background-color: var(--vbwd-checkout-button-primary-hover-bg, #2980b9); }
+.btn.primary:disabled {
+  background-color: var(--vbwd-checkout-button-primary-disabled-bg, #95a5a6);
+  cursor: not-allowed;
+}
+.btn.secondary {
+  background-color: var(--vbwd-checkout-button-secondary-bg, #ecf0f1);
+  color: var(--vbwd-checkout-button-secondary-text, #2c3e50);
+}
+.btn.secondary:hover { background-color: var(--vbwd-checkout-button-secondary-hover-bg, #bdc3c7); }
+.error-message {
+  background: var(--vbwd-checkout-error-message-bg, #fee);
+  color: var(--vbwd-checkout-error-message-text, #c00);
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 15px;
+}
+.pay-button { min-width: 180px; }
+@media (max-width: 600px) {
+  .checkout-actions { flex-direction: column; }
+  .btn { width: 100%; text-align: center; }
+}
+
+/* CheckoutConfirmationView.vue — scoped to its root: theme_booking's BookingSuccess
+   styles the same class names differently. The shared .card / .card h2 / states /
+   spinner above already carry this view's colours. */
+.checkout-confirmation { max-width: 800px; margin: 0 auto; padding: 20px; overflow: hidden; }
+.checkout-confirmation .confirmation-banner { padding: 30px; border-radius: 10px; text-align: center; margin-bottom: 24px; }
+.checkout-confirmation .confirmation-banner h1 { margin: 0 0 8px; font-size: 1.5rem; }
+.checkout-confirmation .confirmation-banner p { margin: 0; font-size: 0.95rem; }
+.checkout-confirmation .confirmation-banner--paid,
+.checkout-confirmation .confirmation-banner--authorized {
+  background: var(--vbwd-checkout-status-paid-bg, #dcfce7);
+  color: var(--vbwd-checkout-status-paid-text, #166534);
+}
+.checkout-confirmation .confirmation-banner--pending {
+  background: var(--vbwd-checkout-status-pending-bg, #fef9c3);
+  color: var(--vbwd-checkout-status-pending-text, #854d0e);
+}
+.checkout-confirmation .confirmation-banner--failed,
+.checkout-confirmation .confirmation-banner--cancelled {
+  background: var(--vbwd-checkout-status-failed-bg, #fee2e2);
+  color: var(--vbwd-checkout-status-failed-text, #991b1b);
+}
+.checkout-confirmation .card { margin-bottom: 20px; }
+.checkout-confirmation .card h2 { margin: 0 0 20px; font-size: 1.15rem; }
+.checkout-confirmation .confirmation-grid { display: flex; flex-direction: column; }
+.checkout-confirmation .confirmation-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--vbwd-checkout-confirmation-row-border, #f3f4f6);
+}
+.checkout-confirmation .confirmation-label {
+  color: var(--vbwd-checkout-confirmation-label-text, #6b7280);
+  font-weight: 500;
+  font-size: 0.9375rem;
+}
+.checkout-confirmation .confirmation-value { color: var(--vbwd-checkout-confirmation-value-text, #1f2937); font-size: 0.9375rem; }
+.checkout-confirmation .confirmation-mono {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: var(--vbwd-checkout-confirmation-mono-text, #6b7280);
+}
+.checkout-confirmation .status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.checkout-confirmation .status-badge.paid,
+.checkout-confirmation .status-badge.authorized {
+  background: var(--vbwd-checkout-status-paid-bg, #dcfce7);
+  color: var(--vbwd-checkout-status-paid-text, #166534);
+}
+.checkout-confirmation .status-badge.pending {
+  background: var(--vbwd-checkout-status-pending-bg, #fef9c3);
+  color: var(--vbwd-checkout-status-pending-text, #854d0e);
+}
+.checkout-confirmation .status-badge.failed,
+.checkout-confirmation .status-badge.cancelled {
+  background: var(--vbwd-checkout-status-failed-bg, #fee2e2);
+  color: var(--vbwd-checkout-status-failed-text, #991b1b);
+}
+.checkout-confirmation .line-items { margin-top: 20px; overflow-x: auto; }
+.checkout-confirmation .line-items h3 {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  color: var(--vbwd-checkout-line-items-heading-text, #374151);
+}
+.checkout-confirmation .line-items-table { width: 100%; border-collapse: collapse; }
+.checkout-confirmation .line-items-table th:first-child,
+.checkout-confirmation .line-items-table td:first-child { width: 50%; }
+.checkout-confirmation .line-items-table th {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--vbwd-checkout-line-items-header-text, #6b7280);
+  border-bottom: 2px solid var(--vbwd-checkout-line-items-header-border, #e5e7eb);
+  white-space: nowrap;
+}
+.checkout-confirmation .line-items-table td {
+  padding: 10px 12px;
+  font-size: 0.9375rem;
+  border-bottom: 1px solid var(--vbwd-checkout-line-items-row-border, #f3f4f6);
+}
+.checkout-confirmation .line-items-table tfoot td {
+  border-top: 2px solid var(--vbwd-checkout-line-items-footer-border, #e5e7eb);
+  border-bottom: none;
+  padding-top: 12px;
+}
+.checkout-confirmation .total-label {
+  text-align: right;
+  font-weight: 600;
+  color: var(--vbwd-checkout-line-items-total-text, #374151);
+}
+.checkout-confirmation .total-value { font-size: 1.05rem; white-space: nowrap; }
+.checkout-confirmation .cms-content { margin-top: 20px; }
+@media (max-width: 600px) {
+  .checkout-confirmation .confirmation-row { flex-direction: column; gap: 4px; }
+  .checkout-confirmation .line-items-table th:nth-child(3),
+  .checkout-confirmation .line-items-table td:nth-child(3) { display: none; }
+}
+
+/* TokenBundleCollection.vue (cards view; its own token chains) */
+.token-bundle-collection__heading { color: var(--vbwd-text-heading, #2c3e50); margin-bottom: 16px; }
+.token-bundle-collection__state { text-align: center; padding: 40px 20px; color: var(--vbwd-text-muted, #666); }
+.token-bundle-collection__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+}
+.token-bundle-card {
+  background: var(--vbwd-card-bg, #fff);
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: var(--vbwd-card-shadow, 0 2px 5px rgba(0, 0, 0, 0.05));
+  border: 2px solid transparent;
+  text-align: center;
+  transition: all 0.2s;
+}
+.token-bundle-card:hover { transform: translateY(-4px); border-color: var(--vbwd-color-primary, #3498db); }
+.token-bundle-card__amount {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--vbwd-text-heading, #2c3e50);
+  margin-bottom: 8px;
+}
+.token-bundle-card__price {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--vbwd-color-primary, #3498db);
+  margin-bottom: 14px;
+}
+.token-bundle-card__description { color: var(--vbwd-text-muted, #666); font-size: 0.9rem; margin-bottom: 16px; }
+.token-bundle-card__add {
+  padding: 10px 16px;
+  background-color: var(--vbwd-color-success, #27ae60);
+  color: var(--vbwd-checkout-token-bundle-add-text, #fff);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  width: 100%;
+}
+
+/* stripe-payment StripeSuccessView.vue (the spinner is the shared one above) */
+.stripe-success { max-width: 600px; margin: 0 auto; padding: 80px 20px; text-align: center; }
+.stripe-success .btn-primary {
+  display: inline-block;
+  padding: 12px 24px;
+  background: var(--vbwd-checkout-button-primary-bg, #3498db);
+  color: var(--vbwd-checkout-button-primary-text, white);
+  border-radius: 4px;
+  text-decoration: none;
+  margin-top: 15px;
+}
+.stripe-success .btn-primary:hover { background: var(--vbwd-checkout-button-primary-hover-bg, #2980b9); }

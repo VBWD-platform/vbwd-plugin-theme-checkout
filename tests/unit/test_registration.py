@@ -13,7 +13,9 @@ from flask import Flask
 
 from plugins.theme import ThemePlugin
 from plugins.theme_checkout import ThemeCheckoutPlugin
+from plugins.theme_checkout.theme_checkout.plugin_paths import STYLESHEETS_DIRECTORY
 from plugins.theme_cms import ThemeCmsPlugin
+from plugins.theme_cms.theme_cms import plugin_paths as theme_cms_paths
 
 FE_USER_CHECKOUT_INDEX = (
     Path(__file__).resolve().parents[5]
@@ -92,6 +94,16 @@ def test_enabling_twice_does_not_register_twice(enabled):
 
     rules = [page.rule for page in enabled.theme.page_registry.pages()]
     assert rules.count("/checkout") == 1
+    stylesheets = enabled.theme.theme_registry.contributed_stylesheet_paths()
+    assert stylesheets.count(STYLESHEETS_DIRECTORY) == 1
+
+
+def test_contributes_its_stylesheet_after_theme_cms(enabled):
+    stylesheets = enabled.theme.theme_registry.contributed_stylesheet_paths()
+
+    assert stylesheets.index(theme_cms_paths.STYLESHEETS_DIRECTORY) < stylesheets.index(
+        STYLESHEETS_DIRECTORY
+    )
 
 
 def test_contributes_its_templates_and_translations(enabled):

@@ -1,8 +1,9 @@
 """Theme adapter mirroring the fe-user checkout plugin (S152-07).
 
 Renders only when ``VBWD_FRONTEND_MODE=theme``; in the default ``vue`` mode the
-Vue SPA serves every page. On enable it contributes its templates and
-translations and registers ``/checkout`` (the island form), the
+Vue SPA serves every page. On enable it contributes its templates,
+translations and ported stylesheet (the checkout-wide ``.card`` / ``.btn`` rules
+selling adapters' pay pages share) and registers ``/checkout`` (the island form), the
 ``checkout-confirmation`` CMS page at ``/checkout/confirmation``, the checkout
 htmx fragments and the CheckoutForm / CheckoutConfirmation /
 TokenBundleCollection CMS widgets. It also registers the payment-provider
@@ -44,6 +45,7 @@ from plugins.theme_checkout.theme_checkout.payment_methods import (
     CheckoutPaymentMethodRegistry,
 )
 from plugins.theme_checkout.theme_checkout.plugin_paths import (
+    STYLESHEETS_DIRECTORY,
     TEMPLATES_DIRECTORY,
     TRANSLATIONS_DIRECTORY,
 )
@@ -105,6 +107,9 @@ class ThemeCheckoutPlugin(BasePlugin):
         theme_plugin.theme_registry.add_contributed_template_path(TEMPLATES_DIRECTORY)
         theme_plugin.theme_registry.add_contributed_translation_path(
             TRANSLATIONS_DIRECTORY
+        )
+        theme_plugin.theme_registry.add_contributed_stylesheet_path(
+            STYLESHEETS_DIRECTORY
         )
         cms_pages = CmsPages(
             theme_cms_plugin.page_type_registry, theme_cms_plugin.component_registry
