@@ -1,0 +1,4 @@
+{#- The confirm fragment's error (a success answers HX-Redirect with no body). -#}
+{%- if error_message or error_key -%}
+<div data-testid="checkout-form-error" class="error-message">{{ error_message or _(error_key) }}</div>
+{%- endif -%}

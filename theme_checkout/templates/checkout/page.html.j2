@@ -1,0 +1,11 @@
+{#- /checkout — fe-user PublicCheckoutView (noLayout: no site chrome). The form is an
+    island the runtime posts with the fe-core cart and, when logged in, the bearer. -#}
+{% extends "_shared/document.html.j2" %}
+{% block title %}{{ _('checkout.title') }}{% endblock %}
+{% block body %}
+  {% include "checkout/_checkout_body.html.j2" %}
+{%- endblock %}
+{% block scripts %}
+{{- super() }}
+  <script>{% include "checkout/partials/checkout_runtime.js" %}</script>
+{%- endblock %}

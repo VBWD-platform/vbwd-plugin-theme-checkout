@@ -1,0 +1,48 @@
+{#- The CheckoutConfirmation CMS widget — CheckoutConfirmationView.vue. -#}
+{%- set confirmation = component_context -%}
+<div class="checkout-confirmation" data-testid="checkout-confirmation">
+  {%- if confirmation.clear_shop_cart %}<template data-vbwd-cart-clear="vbwd_shop_cart"></template>{% endif %}
+  <div class="confirmation-banner confirmation-banner--{{ confirmation.status }}" data-testid="confirmation-banner">
+    <h1>{{ confirmation.title }}</h1>
+    <p>{{ confirmation.message }}</p>
+  </div>
+  {%- if confirmation.invoice %}
+  {%- set invoice = confirmation.invoice %}
+  <div class="card" data-testid="invoice-details">
+    <h2>{{ _('checkout.confirmation.paymentDetails') }}</h2>
+    <div class="confirmation-grid">
+      <div class="confirmation-row"><span class="confirmation-label">{{ _('checkout.confirmation.invoiceNumber') }}</span><span class="confirmation-value confirmation-mono">{{ invoice.number }}</span></div>
+      <div class="confirmation-row"><span class="confirmation-label">{{ _('checkout.confirmation.status') }}</span><span class="confirmation-value"><span class="status-badge {{ confirmation.status }}">{{ confirmation.status }}</span></span></div>
+      {%- if invoice.amount %}
+      <div class="confirmation-row"><span class="confirmation-label">{{ _('checkout.confirmation.amount') }}</span><span class="confirmation-value"><strong>{{ invoice.amount }}</strong></span></div>
+      {%- endif %}
+      {%- if invoice.date %}
+      <div class="confirmation-row"><span class="confirmation-label">{{ _('checkout.confirmation.date') }}</span><span class="confirmation-value">{{ invoice.date }}</span></div>
+      {%- endif %}
+      {%- if invoice.payment_method %}
+      <div class="confirmation-row"><span class="confirmation-label">{{ _('checkout.confirmation.paymentMethod') }}</span><span class="confirmation-value">{{ invoice.payment_method }}</span></div>
+      {%- endif %}
+    </div>
+    {%- if invoice.line_items %}
+    <div class="line-items">
+      <h3>{{ _('checkout.confirmation.items') }}</h3>
+      <table class="line-items-table">
+        <thead><tr><th>{{ _('checkout.confirmation.description') }}</th><th>{{ _('checkout.confirmation.quantity') }}</th><th>{{ _('checkout.confirmation.unitPrice') }}</th><th>{{ _('checkout.confirmation.total') }}</th></tr></thead>
+        <tbody>
+          {%- for item in invoice.line_items %}
+          <tr data-testid="line-item-row"><td>{{ item.description }}</td><td>{{ item.quantity }}</td><td>{{ item.unit_price }}</td><td>{{ item.amount }}</td></tr>
+          {%- endfor %}
+        </tbody>
+        <tfoot><tr><td colspan="3" class="total-label">{{ _('checkout.confirmation.total') }}</td><td class="total-value"><strong>{{ invoice.amount }}</strong></td></tr></tfoot>
+      </table>
+    </div>
+    {%- endif %}
+  </div>
+  {%- endif %}
+  {%- for section in confirmation.sections %}
+  <div class="card" data-confirmation-section="{{ section.name }}">{% include section.template %}</div>
+  {%- endfor %}
+  {%- if confirmation.content_html %}
+  <div class="cms-content">{{ confirmation.content_html }}</div>
+  {%- endif %}
+</div>

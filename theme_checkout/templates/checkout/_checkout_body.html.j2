@@ -1,0 +1,28 @@
+{#- PublicCheckoutView's template branches; shared by /checkout and the CheckoutForm widget.
+    Expects: state, cart_write, route_fields + cart_key (island), load_error (error). -#}
+<div class="public-checkout">
+  <h1 data-testid="checkout-title">{{ _('checkout.title') }}</h1>
+  {%- if cart_write is not none %}
+  <script type="application/json" data-vbwd-cart-write="vbwd_cart">{{ cart_write|tojson }}</script>
+  {%- endif %}
+  {%- if state == 'error' %}
+  {% include "checkout/_load_error.html.j2" %}
+  {%- elif state == 'draft_expired' %}
+  <div class="no-plan" data-testid="checkout-draft-expired">
+    <p>{{ _('checkout.draftExpired') }}</p>
+    <a href="/landing1" class="btn primary">{{ _('common.browsePlans') }}</a>
+  </div>
+  {%- elif state == 'no_plan' %}
+  {% include "checkout/_no_plan.html.j2" %}
+  {%- else %}
+  <div class="checkout-island" id="checkout-island"{% if cart_key|default(none) %} data-vbwd-cart="{{ cart_key }}"{% endif %}
+    hx-post="/_render/_fragment/checkout/form"
+    hx-trigger="load, vbwd:session-started from:body, vbwd:session-ended from:body"
+    hx-swap="innerHTML" hx-vals='{{ route_fields|tojson }}'>
+    <div class="loading-state" data-testid="checkout-loading">
+      <div class="spinner"></div>
+      <p>{{ _('checkout.loading') }}</p>
+    </div>
+  </div>
+  {%- endif %}
+</div>

@@ -1,0 +1,30 @@
+{#- BillingAddressBlock — posted values, else a logged-in buyer's saved address. -#}
+{%- macro billing_input(field, form_name, element_id, label, placeholder, testid, required=true) -%}
+<div class="form-group">
+  <label for="{{ element_id }}">{{ label }}</label>
+  <input id="{{ element_id }}" name="{{ form_name }}" type="text" value="{{ billing['values'][field] }}" placeholder="{{ placeholder }}" data-testid="{{ testid }}"{% if required %} data-billing-required{% endif %}>
+</div>
+{%- endmacro -%}
+<div class="billing-address-block card" data-testid="billing-address-block">
+  <h3>{{ _('components.billingAddress.title') }}</h3>
+  <div class="form-row">
+    {{ billing_input('first_name', 'billing_first_name', 'firstName', _('components.billingAddress.firstNameLabel') ~ ' *', _('components.billingAddress.firstNamePlaceholder'), 'billing-first-name') }}
+    {{ billing_input('last_name', 'billing_last_name', 'lastName', _('components.billingAddress.lastNameLabel') ~ ' *', _('components.billingAddress.lastNamePlaceholder'), 'billing-last-name') }}
+  </div>
+  {{ billing_input('company', 'billing_company', 'company', _('components.billingAddress.companyLabel'), _('components.billingAddress.companyPlaceholder'), 'billing-company', required=false) }}
+  {{ billing_input('street', 'billing_street', 'street', _('components.billingAddress.streetLabel'), _('components.billingAddress.streetPlaceholder'), 'billing-street') }}
+  <div class="form-row city-zip">
+    {{ billing_input('city', 'billing_city', 'city', _('components.billingAddress.cityLabel'), _('components.billingAddress.cityPlaceholder'), 'billing-city') }}
+    {{ billing_input('zip', 'billing_zip', 'zip', _('components.billingAddress.zipLabel'), _('components.billingAddress.zipPlaceholder'), 'billing-zip') }}
+  </div>
+  {{ billing_input('state', 'billing_state', 'state', _('components.billingAddress.stateLabel'), _('components.billingAddress.statePlaceholder'), 'billing-state', required=false) }}
+  <div class="form-group">
+    <label for="country">{{ _('components.billingAddress.countryLabel') }}</label>
+    <select id="country" name="billing_country" data-testid="billing-country" data-billing-required>
+      <option value="">{{ _('components.billingAddress.countryPlaceholder') }}</option>
+      {%- for country in billing.countries %}
+      <option value="{{ country.code }}"{% if country.code == billing['values']['country'] %} selected{% endif %}>{{ country.name }}</option>
+      {%- endfor %}
+    </select>
+  </div>
+</div>

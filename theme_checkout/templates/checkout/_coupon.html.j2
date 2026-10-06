@@ -1,0 +1,23 @@
+{#- fe-core CouponInput (English defaults: PublicCheckoutView passes no labels). Apply / clear
+    re-post the island that includes the block: ``island_form_url`` / ``island_target``
+    (default: the /checkout island; the booking pay island passes its own). -#}
+{%- set coupon_island_url = island_form_url|default('/_render/_fragment/checkout/form') -%}
+{%- set coupon_island_target = island_target|default('#checkout-island') -%}
+<div class="vbwd-coupon checkout-coupon">
+  {%- if coupon.applied_code %}
+  <div class="vbwd-coupon__applied" data-testid="coupon-applied">
+    <span class="vbwd-coupon__applied-label">{{ _('checkout.coupon.appliedLabel') }} {{ coupon.applied_code }}</span>
+    <button type="button" class="vbwd-coupon__clear" data-testid="coupon-clear" name="coupon_action" value="clear"
+      hx-post="{{ coupon_island_url }}" hx-include="closest form" hx-target="{{ coupon_island_target }}" hx-swap="innerHTML">{{ _('checkout.coupon.remove') }}</button>
+  </div>
+  {%- else %}
+  <div class="vbwd-coupon__row">
+    <input type="text" class="vbwd-coupon__input" data-testid="coupon-input" name="coupon_input" placeholder="{{ _('checkout.coupon.placeholder') }}" autocomplete="off">
+    <button type="button" class="vbwd-coupon__apply" data-testid="coupon-apply" name="coupon_action" value="apply" disabled
+      hx-post="{{ coupon_island_url }}" hx-include="closest form" hx-target="{{ coupon_island_target }}" hx-swap="innerHTML">{{ _('checkout.coupon.apply') }}</button>
+  </div>
+  {%- endif %}
+  {%- if coupon.error %}
+  <p class="vbwd-coupon__error" data-testid="coupon-error">{{ coupon.error }}</p>
+  {%- endif %}
+</div>

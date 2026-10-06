@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vbwd-plugin-theme-checkout"
+version = "1.0.0"
+description = "VBWD backend plugin: theme_checkout"
+requires-python = ">=3.11"
+license = { text = "BSL-1.1" }
+dependencies = []
+
+# Runtime lives inside the vbwd-backend host, which provides `vbwd.*` (core) and
+# any sibling plugins declared in PluginMetadata.dependencies. Those are NOT pinned
+# here so the wheel stays host-agnostic; install the host separately.
+
+[tool.setuptools]
+# The repo root IS the plugins/theme_checkout/ directory; remap it so the wheel exposes
+# the `plugins.theme_checkout` package that runtime imports.
+package-dir = { "plugins.theme_checkout" = "." }
+packages = [
+    "plugins.theme_checkout",
+    "plugins.theme_checkout.theme_checkout",
+    "plugins.theme_checkout.theme_checkout.payment",
+]
+
+[tool.setuptools.package-data]
+"plugins.theme_checkout" = [
+    "*.json",
+    "populate_db.py",
+]

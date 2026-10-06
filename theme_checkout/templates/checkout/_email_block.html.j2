@@ -1,0 +1,32 @@
+{#- EmailBlock: logged-in display, or the email field whose check loads login / sign-up. -#}
+{%- if buyer %}
+<div class="email-block success card" data-testid="email-block-success">
+  <h3>{{ _('components.emailBlock.title') }}</h3>
+  <div class="form-group">
+    <input type="email" value="{{ buyer.email }}" data-testid="email-input" disabled>
+  </div>
+  <div class="logged-in" data-testid="logged-in-state">
+    <div class="logged-in-info">
+      <span class="checkmark">✓</span>
+      {%- if buyer.name %}
+      {%- set name_parts = _('components.emailBlock.loggedIn.loggedInAsName', name='{name}', email='{email}').split('{name}') %}
+      {%- set email_parts = name_parts[1].split('{email}') %}
+      <span>{{ name_parts[0] }}<strong data-testid="logged-in-name">{{ buyer.name }}</strong>{{ email_parts[0] }}<span data-testid="logged-in-email">{{ buyer.email }}</span>{{ email_parts[1] }}</span>
+      {%- else %}
+      <span data-testid="logged-in-email">{{ _('components.emailBlock.loggedIn.loggedInAs', email=buyer.email) }}</span>
+      {%- endif %}
+    </div>
+    <button type="button" class="btn secondary logout-btn" data-testid="logout-button" data-vbwd-logout>{{ _('components.emailBlock.loggedIn.logoutButton') }}</button>
+  </div>
+</div>
+{%- else %}
+<div class="email-block card" data-testid="email-block">
+  <h3>{{ _('components.emailBlock.title') }}</h3>
+  <div class="form-group">
+    <input type="email" name="email" placeholder="{{ _('components.emailBlock.emailPlaceholder') }}" data-testid="email-input"
+      hx-get="/_render/_fragment/checkout/email-check" hx-trigger="input changed delay:500ms" hx-target="#checkout-email-auth" hx-swap="innerHTML">
+  </div>
+  <div id="checkout-email-auth"></div>
+  <div id="checkout-email-auth-result"></div>
+</div>
+{%- endif %}

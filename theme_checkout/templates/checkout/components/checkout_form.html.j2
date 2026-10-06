@@ -1,0 +1,5 @@
+{#- The CheckoutForm CMS widget — PublicCheckoutView embedded in a CMS page. -#}
+{%- with state = component_context.state, cart_write = component_context.cart_write, route_fields = component_context.route_fields, load_error = component_context.load_error, cart_key = component_context.cart_key|default(none) -%}
+{% include "checkout/_checkout_body.html.j2" %}
+{%- endwith %}
+<script>{% include "checkout/partials/checkout_runtime.js" %}</script>

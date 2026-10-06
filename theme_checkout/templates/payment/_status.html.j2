@@ -1,0 +1,17 @@
+{#- One step of the status poll (usePaymentStatus); each answer carries the next request. -#}
+{%- if state == 'verifying' -%}
+<div class="{{ provider }}-success__verifying" hx-get="{{ poll.url }}" hx-trigger="{{ 'load delay:' ~ poll.delay if poll.delay else 'load' }}" hx-vals='{{ {"session_id": poll.session_id, "attempt": poll.attempt, "invoice_id": poll.invoice_id}|tojson }}' hx-swap="outerHTML">
+  <div class="spinner"></div>
+  <p>{{ _(translation_namespace ~ '.success.verifying') }}</p>
+</div>
+{%- elif state == 'timed_out' -%}
+<div class="{{ provider }}-success__done" hx-get="{{ poll.url }}" hx-trigger="load delay:{{ poll.delay }}" hx-vals='{{ {"session_id": poll.session_id, "attempt": poll.attempt, "invoice_id": poll.invoice_id}|tojson }}' hx-swap="outerHTML">
+  <p>{{ _(translation_namespace ~ '.success.processing') }}</p>
+  <a href="{{ confirmation_url }}" class="btn btn-primary">{{ _(translation_namespace ~ '.success.viewOrder') }}</a>
+</div>
+{%- else -%}
+<div class="{{ provider }}-success__error">
+  <p>{{ error_message or _(error_key) }}</p>
+  <a href="/dashboard/invoices" class="btn btn-primary">{{ _(translation_namespace ~ '.success.viewInvoices') }}</a>
+</div>
+{%- endif -%}

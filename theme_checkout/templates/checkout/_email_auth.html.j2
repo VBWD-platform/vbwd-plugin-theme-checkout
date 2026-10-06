@@ -1,0 +1,23 @@
+{#- GET /_render/_fragment/checkout/email-check — EmailBlock's new-user / existing-user forms. -#}
+{%- if state == 'new_user' -%}
+<div data-testid="email-new-user" class="new-user-form">
+  <p class="hint">{{ _('components.emailBlock.newUser.hint') }}</p>
+  <input type="password" name="password" placeholder="{{ _('components.emailBlock.newUser.passwordPlaceholder') }}" data-testid="password-input" data-vbwd-new-password>
+  <div class="password-strength" data-testid="password-strength">
+    <div class="strength-bar weak" data-vbwd-strength-bar></div>
+    <span class="strength-label weak" data-vbwd-strength-label data-label-weak="{{ _('components.emailBlock.passwordStrength.weak') }}" data-label-medium="{{ _('components.emailBlock.passwordStrength.medium') }}" data-label-strong="{{ _('components.emailBlock.passwordStrength.strong') }}">{{ _('components.emailBlock.passwordStrength.weak') }}</span>
+  </div>
+  <input type="password" name="password_confirm" placeholder="{{ _('components.emailBlock.newUser.confirmPlaceholder') }}" data-testid="password-confirm-input" data-vbwd-confirm-password>
+  <p class="error-message" data-testid="password-mismatch" hidden>{{ _('components.emailBlock.newUser.passwordMismatch') }}</p>
+  <button type="button" data-testid="signup-button" class="btn primary" disabled data-vbwd-signup
+    hx-post="/_render/_fragment/checkout/register" hx-include="closest form" hx-target="#checkout-email-auth-result" hx-swap="innerHTML" hx-disabled-elt="this">{{ _('components.emailBlock.newUser.signUpButton') }}</button>
+</div>
+{%- elif state == 'existing_user' -%}
+<div data-testid="email-existing-user" class="login-form">
+  <p data-testid="login-hint" class="hint text-red">{{ _('components.emailBlock.existingUser.hint') }}</p>
+  <input type="password" name="password" placeholder="{{ _('components.emailBlock.existingUser.passwordPlaceholder') }}" data-testid="password-input" data-vbwd-login-password>
+  <a href="#" class="forgot-password-link" data-testid="forgot-password-link">{{ _('components.emailBlock.existingUser.forgotPassword') }}</a>
+  <button type="button" data-testid="login-button" class="btn primary" disabled data-vbwd-login
+    hx-post="/_render/_fragment/checkout/login" hx-include="closest form" hx-target="#checkout-email-auth-result" hx-swap="innerHTML" hx-disabled-elt="this">{{ _('components.emailBlock.existingUser.loginButton') }}</button>
+</div>
+{%- endif -%}

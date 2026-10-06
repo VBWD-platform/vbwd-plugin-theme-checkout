@@ -1,0 +1,11 @@
+{#- /pay/<provider>/success — StripeSuccessView (poll) or PayPalSuccessView (capture). -#}
+{% extends "payment/_document.html.j2" %}
+{% block payment_content %}
+<div class="{{ provider }}-success">
+  {%- if success_handling == 'capture_order' %}
+  {% include "payment/_capture.html.j2" %}
+  {%- else %}
+  {% include "payment/_status.html.j2" %}
+  {%- endif %}
+</div>
+{% endblock %}

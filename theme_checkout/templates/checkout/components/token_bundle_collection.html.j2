@@ -1,0 +1,26 @@
+{#- The TokenBundleCollection CMS widget (cards view). "Add to Cart" → vbwd_cart → /checkout. -#}
+{%- set collection = component_context -%}
+<div class="token-bundle-collection">
+  {%- if collection.heading %}
+  <h2 class="token-bundle-collection__heading">{{ collection.heading }}</h2>
+  {%- endif %}
+  {%- if collection.state == 'error' %}
+  <div class="token-bundle-collection__state" data-testid="token-bundle-error"><p>{{ _('tokens.errors.failedToLoad') }}</p></div>
+  {%- elif collection.state == 'empty' %}
+  <div class="token-bundle-collection__state" data-testid="token-bundle-empty"><p>{{ _('tokens.noBundles') }}</p></div>
+  {%- else %}
+  <div class="token-bundle-collection__grid" data-testid="token-bundle-grid">
+    {%- for bundle in collection.bundles %}
+    <div class="token-bundle-card" data-testid="token-bundle-card-{{ bundle.id }}">
+      <div class="token-bundle-card__amount">{{ _('tokens.tokensLabel', amount=bundle.token_amount) }}</div>
+      <div class="token-bundle-card__price">{{ bundle.price }}</div>
+      {%- if bundle.description %}
+      <p class="token-bundle-card__description">{{ bundle.description }}</p>
+      {%- endif %}
+      <button type="button" class="token-bundle-card__add" data-testid="add-to-cart-{{ bundle.id }}" data-vbwd-cart-add='{{ bundle.cart_item|tojson }}' data-vbwd-navigate="/checkout?source=subscription">{{ _('tokens.addToCart') }}</button>
+    </div>
+    {%- endfor %}
+  </div>
+  {%- endif %}
+</div>
+<script>{% include "checkout/partials/checkout_runtime.js" %}</script>

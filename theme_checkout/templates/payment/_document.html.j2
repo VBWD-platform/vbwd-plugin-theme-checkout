@@ -1,0 +1,7 @@
+{#- The /pay/* shell: noLayout + requiresAuth. data-auth="pending" keeps the content
+    hidden until the runtime confirms the session; no session → /login?redirect=. -#}
+{% extends "_shared/document.html.j2" %}
+{% block body_attributes %} data-auth="pending" data-vbwd-auth-required{% endblock %}
+{% block body %}
+  <div class="vbwd-private-chrome">{% block payment_content %}{% endblock %}</div>
+{%- endblock %}

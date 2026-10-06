@@ -1,0 +1,5 @@
+{#- POST …/create — reached only when the provider gave no redirect (success = HX-Redirect). -#}
+<div class="{{ provider }}-payment__error">
+  <p>{{ error_message or _(error_key) }}</p>
+  <button class="btn btn-primary" type="button" hx-post="{{ create_url }}" hx-vals='{{ {"invoice_id": invoice_id}|tojson }}' hx-target="closest .{{ provider }}-payment__error" hx-swap="outerHTML">{{ _(translation_namespace ~ '.payment.retry') }}</button>
+</div>

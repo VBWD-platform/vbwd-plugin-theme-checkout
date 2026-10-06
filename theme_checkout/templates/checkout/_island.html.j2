@@ -1,0 +1,52 @@
+{#- The checkout island (POST /_render/_fragment/checkout/form) — PublicCheckoutView's
+    form. Every re-post includes the whole form, so typed values survive. -#}
+{%- if state == 'no_plan' -%}
+{% include "checkout/_no_plan.html.j2" %}
+{%- elif state == 'error' -%}
+{% include "checkout/_load_error.html.j2" %}
+{%- else -%}
+<form class="checkout-content" data-vbwd-checkout-form data-authenticated="{{ '1' if buyer else '0' }}" data-pay-zero="{{ '1' if is_pay_zero else '0' }}" data-payable="{{ '1' if has_payable_total else '0' }}">
+  {%- for field_name, field_value in route_fields.items() %}
+  <input type="hidden" name="{{ field_name }}" value="{{ field_value }}">
+  {%- endfor %}
+  <input type="hidden" name="coupon_code" value="{{ coupon.applied_code or '' }}">
+  {% include "checkout/_email_block.html.j2" %}
+  <div class="card order-summary" data-testid="order-summary">
+    <h2>{{ _('checkout.orderSummary.title') }}</h2>
+    <div data-testid="checkout-order-summary">{% include summary_template %}</div>
+    {%- if has_payable_total %}
+    {% include "checkout/_coupon.html.j2" %}
+    {%- endif %}
+    <div class="order-total" data-testid="order-total">
+      <strong data-testid="order-total-amount">{{ _('checkout.orderSummary.finalPrice') if discount else _('checkout.orderSummary.total') }} {{ order_total }}</strong>
+      {%- if discount %}
+      <div class="order-saved" data-testid="order-discount">{{ _('checkout.orderSummary.youSaved') }} {{ discount }}</div>
+      {%- endif %}
+    </div>
+  </div>
+  {%- if has_payable_total %}
+  {% include "checkout/_billing_address.html.j2" %}
+  {%- endif %}
+  {%- if not is_pay_zero %}
+  {% include "checkout/_payment_methods.html.j2" %}
+  {%- endif %}
+  {% include "checkout/_terms.html.j2" %}
+  <div class="requirements" data-testid="checkout-requirements"{% if not requirements %} hidden{% endif %}>
+    <p><strong>{{ _('checkout.requirements.title') }}</strong></p>
+    <ul>
+      <li data-requirement="signIn"{% if 'signIn' not in requirements %} hidden{% endif %}>{{ _('checkout.requirements.signIn') }}</li>
+      <li data-requirement="billingAddress"{% if 'billingAddress' not in requirements %} hidden{% endif %}>{{ _('checkout.requirements.billingAddress') }}</li>
+      <li data-requirement="paymentMethod"{% if 'paymentMethod' not in requirements %} hidden{% endif %}>{{ _('checkout.requirements.paymentMethod') }}</li>
+      <li data-requirement="acceptTerms"{% if 'acceptTerms' not in requirements %} hidden{% endif %}>{{ _('checkout.requirements.acceptTerms') }}</li>
+    </ul>
+  </div>
+  <div class="checkout-actions">
+    <a href="/landing1" class="btn secondary">{{ _('common.backToPlans') }}</a>
+    <button type="button" data-testid="confirm-checkout" class="btn primary pay-button"{% if requirements %} disabled{% endif %}
+      hx-post="/_render/_fragment/checkout/submit" hx-include="closest form" hx-target="#checkout-submit-result" hx-swap="innerHTML" hx-disabled-elt="this">
+      {{- _('checkout.activateFree') if is_pay_zero else _('checkout.payButton', amount=order_total) -}}
+    </button>
+  </div>
+  <div id="checkout-submit-result"></div>
+</form>
+{%- endif -%}

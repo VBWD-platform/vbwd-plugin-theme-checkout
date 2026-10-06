@@ -1,0 +1,16 @@
+{#- PayPalSuccessView: capturing → confirmed | error (one capture request on load). -#}
+{%- if state == 'capturing' -%}
+<div class="{{ provider }}-success__verifying" hx-post="{{ capture.url }}" hx-trigger="load" hx-vals='{{ {"order_id": capture.order_id}|tojson }}' hx-swap="outerHTML">
+  <p>{{ _(translation_namespace ~ '.success.verifying') }}</p>
+</div>
+{%- elif state == 'confirmed' -%}
+<div class="{{ provider }}-success__confirmed">
+  <h2>{{ _(translation_namespace ~ '.success.title') }}</h2>
+  <p>{{ _(translation_namespace ~ '.success.message') }}</p>
+  <a href="/dashboard/invoices" class="btn btn-primary">{{ _(translation_namespace ~ '.success.viewInvoices') }}</a>
+</div>
+{%- else -%}
+<div class="{{ provider }}-success__error">
+  <p>{{ error_message or _(error_key) }}</p>
+</div>
+{%- endif -%}

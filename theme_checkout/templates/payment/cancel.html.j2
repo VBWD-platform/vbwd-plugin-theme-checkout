@@ -1,0 +1,9 @@
+{#- /pay/<provider>/cancel — the cancel view: back to the checkout. -#}
+{% extends "payment/_document.html.j2" %}
+{% block payment_content %}
+<div class="{{ provider }}-cancel">
+  <h2>{{ _(translation_namespace ~ '.cancel.title') }}</h2>
+  <p>{{ _(translation_namespace ~ '.cancel.message') }}</p>
+  <a href="/checkout" class="btn btn-primary">{{ _(translation_namespace ~ '.cancel.tryAgain') }}</a>
+</div>
+{% endblock %}

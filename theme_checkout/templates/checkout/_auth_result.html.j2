@@ -1,0 +1,6 @@
+{#- The inline login / sign-up answer: the runtime's session directive, or EmailBlock's error. -#}
+{%- if session -%}
+<script type="application/json" data-vbwd-session>{{ session|tojson }}</script>
+{%- elif error_message or error_key -%}
+<p class="error-message">{{ error_message or _(error_key) }}</p>
+{%- endif -%}

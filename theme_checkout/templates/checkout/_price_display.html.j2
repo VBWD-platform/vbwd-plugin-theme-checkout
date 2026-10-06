@@ -1,0 +1,4 @@
+{#- fe-user PriceDisplay.vue — one sellable price (a PriceDisplayView). -#}
+{%- macro price_display(price) -%}
+<span class="price-display"><span class="price-display__amount" data-testid="price-amount">{{ price.label }}</span>{% if price.show_netto_tag %}<span class="price-display__netto-tag" data-testid="price-netto-tag">{{ _('price.nettoTag') }}</span>{% endif %}</span>
+{%- endmacro -%}

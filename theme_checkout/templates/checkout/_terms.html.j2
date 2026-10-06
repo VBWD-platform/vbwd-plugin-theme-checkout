@@ -1,0 +1,24 @@
+{#- TermsCheckbox — the popup content is loaded with the island (no extra round trip). -#}
+<div class="terms-checkbox" data-testid="terms-checkbox">
+  <label class="checkbox-label">
+    <input type="checkbox" name="terms" value="on"{% if terms.accepted %} checked{% endif %}>
+    <span>
+      {{ _('components.termsCheckbox.agreeText') }}
+      <a href="#" data-testid="terms-link" data-vbwd-terms-open>{{ _('components.termsCheckbox.termsLink') }}</a>
+    </span>
+  </label>
+  <div class="popup-overlay" data-testid="terms-popup" data-vbwd-terms-popup hidden>
+    <div class="popup-content">
+      <div class="popup-header">
+        <h3>{{ terms.title or _('components.termsCheckbox.popupTitle') }}</h3>
+        <button type="button" data-testid="terms-popup-close" class="close-btn" data-vbwd-terms-close>&times;</button>
+      </div>
+      <div data-testid="terms-content" class="popup-body">
+        {%- if terms.content_html is not none %}{{ terms.content_html }}{% else %}<p>{{ _('components.termsCheckbox.failedToLoad') }}</p>{% endif -%}
+      </div>
+      <div class="popup-footer">
+        <button type="button" class="btn primary" data-vbwd-terms-close>{{ _('components.termsCheckbox.popupClose') }}</button>
+      </div>
+    </div>
+  </div>
+</div>

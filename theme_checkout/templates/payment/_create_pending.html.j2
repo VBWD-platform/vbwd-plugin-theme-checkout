@@ -1,0 +1,3 @@
+<div class="{{ provider }}-payment__loading" hx-post="{{ create_url }}" hx-trigger="load" hx-vals='{{ {"invoice_id": invoice_id}|tojson }}' hx-swap="outerHTML">
+  <p>{{ _(translation_namespace ~ '.payment.redirecting') }}</p>
+</div>

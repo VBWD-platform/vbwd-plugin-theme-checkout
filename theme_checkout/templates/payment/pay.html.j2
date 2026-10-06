@@ -1,0 +1,11 @@
+{#- /pay/<provider> — <Provider>PaymentView + usePaymentRedirect: create the session, go. -#}
+{% extends "payment/_document.html.j2" %}
+{% block payment_content %}
+<div class="{{ provider }}-payment">
+  {%- if invoice_id %}
+  {% include "payment/_create_pending.html.j2" %}
+  {%- else %}
+  <div class="{{ provider }}-payment__no-invoice"><p>{{ _(translation_namespace ~ '.payment.noInvoice') }}</p></div>
+  {%- endif %}
+</div>
+{% endblock %}
